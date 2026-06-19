@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 
@@ -110,8 +111,8 @@ export async function createCheckoutSession(
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/pedido/sucesso?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/checkout`,
+      success_url: `${await getBaseUrl()}/pedido/sucesso?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${await getBaseUrl()}/checkout`,
       customer_email: formData.customerEmail,
       metadata: {
         orderId: order.id,
@@ -129,4 +130,27 @@ export async function createCheckoutSession(
     console.error("Erro ao criar sessão de checkout:", error);
     return { error: "Não foi possível processar o pagamento. Tente novamente." };
   }
+}
+
+async function getBaseUrl(): Promise<string> {
+  // Vercel provides this automatically
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  // Local dev
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+  // Fallback: detect from request headers
+  try {
+    const h = await headers();
+    const host = h.get("host");
+    if (host) {
+      const proto = h.get("x-forwarded-proto") ?? "http";
+      return `${proto}://${host}`;
+    }
+  } catch {
+    // headers() may fail in some contexts
+  }
+  return "http://localhost:3000";
 }
