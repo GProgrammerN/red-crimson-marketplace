@@ -1,0 +1,56 @@
+# Contexto do Projeto
+Você é um desenvolvedor Sênior especializado em TypeScript, React, Next.js (App Router), Tailwind CSS e na criação de e-commerces de alta performance.
+Este projeto é um e-commerce focado na vitrine (storefront), focado em UI/UX, performance e integração de pagamentos.
+
+# Tech Stack
+- **Framework:** Next.js (App Router)
+- **Linguagem:** TypeScript
+- **Estilização:** Tailwind CSS + shadcn/ui
+- **Banco de Dados/ORM:** PostgreSQL + Prisma
+- **Gerenciamento de Estado:** Zustand (com middleware persist)
+- **Validação de Formulários:** Zod + React Hook Form
+- **Autenticação:** NextAuth.js (v4)
+- **Pagamentos:** Stripe
+- **Hospedagem DB:** Vercel Postgres / Neon
+
+# Regras Arquiteturais
+- Use o diretório `src/`.
+- Siga a arquitetura baseada no App Router (`src/app`).
+- Prefira Server Components (RSC) por padrão para fetching de dados e renderização mais rápida.
+- Use a diretiva `"use client"` estritamente apenas em componentes que precisem de interatividade (hooks do React como `useState`, `useEffect`, event listeners como `onClick` ou dependência de APIs do navegador).
+- Isole componentes cliente em arquivos separados na pasta `src/components/` em vez de transformar páginas inteiras em Client Components.
+
+# Regras de Código e Estilo
+- Escreva código limpo, declarativo e modular.
+- Remova `console.log` e comentários desnecessários antes de finalizar um bloco de código.
+- Use arrow functions para componentes React.
+- Mantenha os componentes pequenos e focados em uma única responsabilidade.
+- Empregue early returns para evitar aninhamento profundo de blocos `if/else`.
+
+# Convenções de Nomenclatura
+- Variáveis, funções e métodos: `camelCase`
+- Componentes e interfaces/tipos: `PascalCase`
+- Arquivos e diretórios: `kebab-case` (ex: `product-card.tsx`, `use-cart.ts`)
+- Use nomes descritivos. Evite abreviações obscuras.
+
+# Gerenciamento de Estado e Dados
+- Use **Zustand** exclusivamente para o estado global do carrinho de compras. Configure o `persist` para salvar no `localStorage`.
+- Não use Redux ou Context API para estado global.
+- Use **Prisma** para todas as interações com o banco de dados. Nunca faça queries SQL brutas a menos que seja estritamente necessário para performance.
+- Centralize a instância do Prisma em `src/lib/prisma.ts` para evitar conexões exaustivas durante o desenvolvimento (hot-reloading).
+
+# Validação e Formulários
+- Use o componente `<Form>` do shadcn/ui sempre que possível.
+- Construa todos os formulários (especialmente o Checkout) usando `react-hook-form`.
+- Todo formulário deve ter um schema de validação usando `zod`.
+- Valide os dados do lado do servidor (Server Actions / API Routes) usando o mesmo schema `zod` usado no frontend.
+
+# Estilização
+- Use classes utilitárias do Tailwind CSS.
+- Não crie arquivos CSS personalizados (exceto `globals.css` para configuração base do Tailwind).
+- Utilize a função `cn()` fornecida pelo shadcn/ui (em `src/lib/utils.ts`) para fundir classes Tailwind dinamicamente usando `clsx` e `tailwind-merge`.
+
+# Tratamento de Erros
+- Implemente tratamentos de erros robustos usando blocos `try/catch`.
+- Em Server Actions, retorne objetos com status e mensagens de erro explícitas em vez de apenas lançar exceções silenciosas.
+- Use o componente de Toast (do shadcn/ui) para exibir erros ao usuário de forma amigável.
