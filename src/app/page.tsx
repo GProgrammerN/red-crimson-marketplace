@@ -30,8 +30,6 @@ async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
       orderBy: { createdAt: "desc" },
     });
 
-    console.log(`[DB] Produtos encontrados: ${products.length}`);
-
     return products.map((product) => ({
       id: product.id,
       name: product.name,
@@ -43,8 +41,7 @@ async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
       images: product.images,
       badge: "Vermelho Intenso",
     }));
-  } catch (error) {
-    console.error("[DB] Erro ao buscar produtos:", error);
+  } catch {
     return [];
   }
 }
