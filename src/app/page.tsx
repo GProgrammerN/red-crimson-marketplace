@@ -4,6 +4,8 @@ import { HeroSection } from "@/components/home/hero-section";
 import { ProductGrid } from "@/components/product/product-grid";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 type FeaturedProduct = {
   id: string;
   name: string;
@@ -24,32 +26,25 @@ async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
   try {
     const products = await prisma.product.findMany({
       where: { isFeatured: true, isArchived: false },
-      include: { category: true },
       take: 8,
       orderBy: { createdAt: "desc" },
     });
 
-    return products.map(
-      (product: {
-        id: string;
-        name: string;
-        slug: string;
-        price: { toString: () => string };
-        comparePrice: { toString: () => string } | null;
-        images: string[];
-      }) => ({
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        price: Number(product.price),
-        comparePrice: product.comparePrice
-          ? Number(product.comparePrice)
-          : null,
-        images: product.images,
-        badge: "Vermelho Intenso",
-      })
-    );
-  } catch {
+    console.log(`[DB] Produtos encontrados: ${products.length}`);
+
+    return products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: Number(product.price),
+      comparePrice: product.comparePrice
+        ? Number(product.comparePrice)
+        : null,
+      images: product.images,
+      badge: "Vermelho Intenso",
+    }));
+  } catch (error) {
+    console.error("[DB] Erro ao buscar produtos:", error);
     return [];
   }
 }
